@@ -62,10 +62,13 @@ def calc_indiv_fitness(indiv, attr, ideal_ratio):
     return indiv_fitness
 
 
-def display_group(grouping):
+def display_group(grouping, attr, df):
 
+    print(df[attr].value_counts())
     for g in grouping:
-        print(df.loc[g])
+        sdf = df.loc[g]
+        print(sdf[attr].value_counts())
+        print(len(g))
 
 
 def seed_individuals(CLASS_SIZE, NUM_GROUPS, NUM_RANDOM_INDIVIDUALS):
@@ -86,6 +89,16 @@ def calc_pop_fitness_for_attr(curr_population, attr, df):
     return fitness
 
 
+def assign_group_column(df, res_df, curr_population):
+
+    df["Group"] = 0
+    winner = curr_population[res_df.index[0]]
+    for idx, g in enumerate(winner):
+        df.loc[g, "Group"] = idx + 1
+
+    print(df)
+
+
 if __name__ == "__main__":
 
     # PARAMETERS
@@ -103,6 +116,8 @@ if __name__ == "__main__":
 
     # Assign fitness score to curr_population
     attr = "Gender"
+    attr = "Country"
+
     num_unique = df[attr].nunique()
 
     # for attr_type in range(num_unique):
@@ -110,7 +125,9 @@ if __name__ == "__main__":
 
     fitness = calc_pop_fitness_for_attr(curr_population, attr, df)
 
-    display_group(curr_population[39])
-    print(pd.Series(fitness).sort_values().head(20))
-    print(fitness)
+    res_df = pd.Series(fitness).sort_values().head(20)
 
+    print(fitness)
+    display_group(curr_population[res_df.index[0]], attr, df)
+
+    assign_group_column(df, res_df, curr_population)
