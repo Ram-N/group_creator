@@ -69,14 +69,33 @@ def calc_indiv_fitness(indiv, attr, ideal_ratio):
     return indiv_fitness
 
 
-def calc_pop_fitness_for_attr(curr_population, attr, entity_info):
+def calc_pop_fitness_for_attr(
+    fitness, curr_population, attr, attr_importance, entity_info
+):
     """Calculate the fitness score of the entire pop, based on given attr
+
+        Store it in the correct slot for that attr in the fitness dictionary
     """
     ideal_ratio = entity_info[attr].value_counts() / CLASS_SIZE
 
+    for idx in range(len(curr_population)):
+        fitness[idx][attr_importance] = calc_indiv_fitness(
+            curr_population[idx], attr, ideal_ratio
+        )
+    return fitness
+
+
+def calc_pop_fitness(curr_population, ranked_attrs, entity_info):
+
     fitness = {}
-    for idx in range(NUM_RANDOM_INDIVIDUALS):
-        fitness[idx] = calc_indiv_fitness(curr_population[idx], attr, ideal_ratio)
+    for idx in range(len(curr_population)):
+        fitness[idx] = [BIG_VALUE] * len(ranked_attrs)
+
+    for attr_importance, attr in enumerate(ranked_attrs):
+        fitness = calc_pop_fitness_for_attr(
+            fitness, curr_population, attr, attr_importance, entity_info
+        )
+
     return fitness
 
 
@@ -90,15 +109,20 @@ def add_column_to_entity_info(entity_info, res_df, curr_population):
     print(entity_info)
 
 
-def display_group(grouping, attr, entity_info):
+def display_group(grouping, tanked_attrs, entity_info):
 
-    print(entity_info[attr].value_counts())
-    for g in grouping:
-        sdf = entity_info.loc[g]
-        print(sdf[attr].value_counts())
+    for attr in ranked_attrs:
+        unique_values = entity_info[attr].unique()
+        for u in unique_values:
+            print(f"{u}:\t", end=" ")
+            for g in grouping:
+                sdf = entity_info.loc[g]
+                print((sdf[attr] == u).sum(), end=" ")
+            print()
 
     for g in grouping:
         print(len(g), end=" ")
+
     print()
 
 
@@ -109,6 +133,7 @@ if __name__ == "__main__":
     KEEP_TOP = 20
     MUTATION_FRAC = 0.05
 
+    BIG_VALUE = 1000
     NUM_GROUPS = 4
     entity_info = pd.read_csv("../data/form_groups.csv")
     CLASS_SIZE = len(entity_info)
@@ -118,19 +143,13 @@ if __name__ == "__main__":
     curr_population = seed_individuals(CLASS_SIZE, NUM_GROUPS, NUM_RANDOM_INDIVIDUALS)
 
     # Assign fitness score to curr_population
-    attr = "Gender"
-    attr = "Country"
+    ranked_attrs = ["Gender", "Country"]
 
-    num_unique = entity_info[attr].nunique()
-
-    # for attr_type in range(num_unique):
-    #     entity_info[attr].value_counts()[attr_type] / CLASS_SIZE
-
-    fitness = calc_pop_fitness_for_attr(curr_population, attr, entity_info)
+    fitness = calc_pop_fitness(curr_population, ranked_attrs, entity_info)
 
     res_df = pd.Series(fitness).sort_values().head(20)
 
-    print(fitness)
-    display_group(curr_population[res_df.index[0]], attr, entity_info)
+    print(res_df)
+    display_group(curr_population[res_df.index[0]], ranked_attrs, entity_info)
 
     add_column_to_entity_info(entity_info, res_df, curr_population)
