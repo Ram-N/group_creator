@@ -36,6 +36,13 @@ def create_random_indiv(CLASS_SIZE, num_groups):
     return groups
 
 
+def seed_individuals(CLASS_SIZE, NUM_GROUPS, NUM_RANDOM_INDIVIDUALS):
+    population = {}
+    for i in range(NUM_RANDOM_INDIVIDUALS):
+        population[i] = create_random_indiv(CLASS_SIZE, NUM_GROUPS)
+    return population
+
+
 def calc_indiv_fitness(indiv, attr, ideal_ratio):
     """    Score each individual in the population on one attribute
 
@@ -54,34 +61,18 @@ def calc_indiv_fitness(indiv, attr, ideal_ratio):
     for g in indiv:
         gsize = len(g)
         actual_ratio = {}
-        for atype in df[attr].value_counts().keys():
-            actual_ratio[atype] = sum(df.loc[g][attr] == atype) / gsize
+        for atype in entity_info[attr].value_counts().keys():
+            actual_ratio[atype] = sum(entity_info.loc[g][attr] == atype) / gsize
 
         indiv_fitness += sum((pd.Series(actual_ratio) - ideal_ratio) ** 2)
 
     return indiv_fitness
 
 
-def display_group(grouping, attr, df):
-
-    print(df[attr].value_counts())
-    for g in grouping:
-        sdf = df.loc[g]
-        print(sdf[attr].value_counts())
-        print(len(g))
-
-
-def seed_individuals(CLASS_SIZE, NUM_GROUPS, NUM_RANDOM_INDIVIDUALS):
-    population = {}
-    for i in range(NUM_RANDOM_INDIVIDUALS):
-        population[i] = create_random_indiv(CLASS_SIZE, NUM_GROUPS)
-    return population
-
-
-def calc_pop_fitness_for_attr(curr_population, attr, df):
+def calc_pop_fitness_for_attr(curr_population, attr, entity_info):
     """Calculate the fitness score of the entire pop, based on given attr
     """
-    ideal_ratio = df[attr].value_counts() / CLASS_SIZE
+    ideal_ratio = entity_info[attr].value_counts() / CLASS_SIZE
 
     fitness = {}
     for idx in range(NUM_RANDOM_INDIVIDUALS):
@@ -89,14 +80,26 @@ def calc_pop_fitness_for_attr(curr_population, attr, df):
     return fitness
 
 
-def assign_group_column(df, res_df, curr_population):
+def add_column_to_entity_info(entity_info, res_df, curr_population):
 
-    df["Group"] = 0
+    entity_info["Group"] = 0
     winner = curr_population[res_df.index[0]]
     for idx, g in enumerate(winner):
-        df.loc[g, "Group"] = idx + 1
+        entity_info.loc[g, "Group"] = idx + 1
 
-    print(df)
+    print(entity_info)
+
+
+def display_group(grouping, attr, entity_info):
+
+    print(entity_info[attr].value_counts())
+    for g in grouping:
+        sdf = entity_info.loc[g]
+        print(sdf[attr].value_counts())
+
+    for g in grouping:
+        print(len(g), end=" ")
+    print()
 
 
 if __name__ == "__main__":
@@ -107,8 +110,8 @@ if __name__ == "__main__":
     MUTATION_FRAC = 0.05
 
     NUM_GROUPS = 4
-    df = pd.read_csv("../data/form_groups.csv")
-    CLASS_SIZE = len(df)
+    entity_info = pd.read_csv("../data/form_groups.csv")
+    CLASS_SIZE = len(entity_info)
     print(f"Will divide {CLASS_SIZE} individuals into {NUM_GROUPS} groups")
 
     # Create a starter Population of Individuals
@@ -118,16 +121,16 @@ if __name__ == "__main__":
     attr = "Gender"
     attr = "Country"
 
-    num_unique = df[attr].nunique()
+    num_unique = entity_info[attr].nunique()
 
     # for attr_type in range(num_unique):
-    #     df[attr].value_counts()[attr_type] / CLASS_SIZE
+    #     entity_info[attr].value_counts()[attr_type] / CLASS_SIZE
 
-    fitness = calc_pop_fitness_for_attr(curr_population, attr, df)
+    fitness = calc_pop_fitness_for_attr(curr_population, attr, entity_info)
 
     res_df = pd.Series(fitness).sort_values().head(20)
 
     print(fitness)
-    display_group(curr_population[res_df.index[0]], attr, df)
+    display_group(curr_population[res_df.index[0]], attr, entity_info)
 
-    assign_group_column(df, res_df, curr_population)
+    add_column_to_entity_info(entity_info, res_df, curr_population)
