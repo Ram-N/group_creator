@@ -165,7 +165,7 @@ def mate(cand1, cand2):
     return new
 
 
-def crossover(curr_population, num_offspring, gen_start):
+def crossover(curr_population, num_offspring, gen_start, CLASS_SIZE):
 
     offspring = {}
     for cID in range(gen_start, gen_start + num_offspring):
@@ -181,7 +181,7 @@ def crossover(curr_population, num_offspring, gen_start):
         # print(f"Parent 2:{cand2}")
         offspring[cID] = Candidate(ID=cID, grouping=new_cand)
         # calc its fitness
-        calc_candidate_fitness(offspring[cID], ranked_attrs, entity_info)
+        calc_candidate_fitness(offspring[cID], ranked_attrs, entity_info, CLASS_SIZE)
         if DEBUG:
             print(offspring[cID])
 

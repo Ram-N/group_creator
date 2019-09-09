@@ -1,13 +1,13 @@
 import pandas as pd
 
-from .cfg import ranked_attrs, entity_info, CLASS_SIZE
+from .cfg import ranked_attrs
 
 
 def sort_pop_by_fitness(curr_population):
     return sorted(curr_population.items(), key=lambda x: x[1].fitness)
 
 
-def calc_candidate_fitness(candidate, ranked_attrs, entity_info):
+def calc_candidate_fitness(candidate, ranked_attrs, entity_info, CLASS_SIZE):
     """    Score one candidate on all attributes
 
     In this case, a candidate is made up of "groups" or clusters

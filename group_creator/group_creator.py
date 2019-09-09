@@ -83,10 +83,15 @@ def keep_top_n(curr_population, NUM_RETAIN):
     return curr_population
 
 
-if __name__ == "__main__":
+def create_groups():
 
     # Create a starter Population of Individuals
     # {Number: Candidate} dictionary
+
+    entity_info = pd.read_csv("data/raw/group_creation_sample1.csv")
+    CLASS_SIZE = len(entity_info)
+    print(f"Will divide {CLASS_SIZE} individuals into {NUM_GROUPS} groups")
+
     curr_population = seed_individuals(CLASS_SIZE, NUM_GROUPS, POPULATION_SIZE)
     genID_start = POPULATION_SIZE
     num_offspring = POPULATION_SIZE - NUM_RETAIN  # needed in Crossover step
@@ -114,7 +119,7 @@ if __name__ == "__main__":
 
         display_results(curr_population, topk=5)
         # Add offspring to current population
-        offspring = crossover(curr_population, num_offspring, genID_start)
+        offspring = crossover(curr_population, num_offspring, genID_start, CLASS_SIZE)
         genID_start += num_offspring
 
         # merge curr_population and offspring
@@ -124,3 +129,5 @@ if __name__ == "__main__":
         )
 
     # add_column_to_entity_info(entity_info, res_df, curr_population)
+if __name__ == "__main__":
+    create_groups()
