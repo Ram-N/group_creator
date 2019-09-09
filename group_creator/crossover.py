@@ -1,8 +1,8 @@
 import random
 
-from candidate import Candidate
-from cfg import *
-from fitness import *
+from .candidate import Candidate
+from .cfg import *
+from .fitness import *
 
 
 def init_new(grouping1):
@@ -182,6 +182,7 @@ def crossover(curr_population, num_offspring, gen_start):
         offspring[cID] = Candidate(ID=cID, grouping=new_cand)
         # calc its fitness
         calc_candidate_fitness(offspring[cID], ranked_attrs, entity_info)
-        print(offspring[cID])
+        if DEBUG:
+            print(offspring[cID])
 
     return offspring

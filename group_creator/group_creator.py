@@ -3,10 +3,17 @@ import numpy as np
 import pandas as pd
 import random
 
-from candidate import Candidate
-from crossover import crossover
-from cfg import *
-from fitness import *
+from .cfg import *
+from .candidate import Candidate
+from .crossover import crossover
+from .fitness import sort_pop_by_fitness, calc_pop_fitness, calc_candidate_fitness
+from .output import (
+    display_candidate_fitness,
+    display_group_details,
+    print_topper_details,
+    display_results,
+)
+
 
 # ## Equitable Groups Creator
 #
@@ -62,28 +69,6 @@ def add_column_to_entity_info(entity_info, res_df, curr_population):
     print(entity_info)
 
 
-def display_group_details(candidate, ranked_attrs, entity_info):
-
-    for attr in ranked_attrs:
-        unique_values = entity_info[attr].unique()
-        for u in unique_values:
-            print(f"{u}:\t", end=" ")
-            for g in candidate.grouping:
-                sdf = entity_info.loc[g]
-                print((sdf[attr] == u).sum(), end=" ")
-            print()
-
-    print(f"Group Lengths:", end="")
-    for g in candidate.grouping:
-        print(len(g), end=" ")
-
-    print()
-
-
-def sort_pop_by_fitness(curr_population):
-    return sorted(curr_population.items(), key=lambda x: x[1].fitness)
-
-
 def keep_top_n(curr_population, NUM_RETAIN):
     """Keep N individuals for seeding the next Generation
 
@@ -98,49 +83,44 @@ def keep_top_n(curr_population, NUM_RETAIN):
     return curr_population
 
 
-def display_candidate_fitness(candID, curr_population):
-    print(f"Fitness for {candID}:  {curr_population[candID].fitness}\n")
-
-
-def print_topper_details(topper_ID, curr_population, ranked_attrs, entity_info):
-    print(f"THE Topper {topper_ID}")
-    display_group_details(curr_population[topper_ID], ranked_attrs, entity_info)
-    display_candidate_fitness(topper_ID, curr_population)
-
-
 if __name__ == "__main__":
 
     # Create a starter Population of Individuals
     # {Number: Candidate} dictionary
     curr_population = seed_individuals(CLASS_SIZE, NUM_GROUPS, POPULATION_SIZE)
-    gen_start = POPULATION_SIZE
-
-    # Generate the initial population
-    # Compute fitness
-    # REPEAT
-    #     Selection
-    #     Crossover
-    #     Mutation
-    #     Compute fitness
-    # UNTIL population has converged
-
-    # Main Loop for each Generation
-
-    # FITNESS
-    calc_pop_fitness(curr_population, ranked_attrs, entity_info)
-
-    # SELECTION: Cull the low fitness individuals
-    curr_population = keep_top_n(curr_population, NUM_RETAIN)
-    print(f"Population now has {len(curr_population)} survivors.")
-
-    sorted_pop = sort_pop_by_fitness(curr_population)  # List of (ID,Cand)
-    [print(cand) for ID, cand in sorted_pop[:5]]  # print the top 5
-    print_topper_details(sorted_pop[0][0], curr_population, ranked_attrs, entity_info)
-
+    genID_start = POPULATION_SIZE
     num_offspring = POPULATION_SIZE - NUM_RETAIN  # needed in Crossover step
 
-    # Add offspring to current population
-    offspring = crossover(curr_population, num_offspring, gen_start)
-    gen_start += num_offspring
+    gen = 0
+    while gen < NUM_GENERATIONS:
+        gen += 1
+        # Generate the initial population
+        # Compute fitness
+        # REPEAT
+        #     compute Fitness
+        #     Selection
+        #     Crossover
+        #     Mutation
+        # UNTIL population has converged
+
+        # Main Loop for each Generation
+
+        # FITNESS
+        calc_pop_fitness(curr_population, ranked_attrs, entity_info)
+
+        # SELECTION: Cull the low fitness individuals
+        curr_population = keep_top_n(curr_population, NUM_RETAIN)
+        print(f"Gen:{gen} Population has {len(curr_population)} survivors.")
+
+        display_results(curr_population, topk=5)
+        # Add offspring to current population
+        offspring = crossover(curr_population, num_offspring, genID_start)
+        genID_start += num_offspring
+
+        # merge curr_population and offspring
+        curr_population = {**curr_population, **offspring}
+        print(
+            f" Generation {gen} Population now has {len(curr_population)} candidates."
+        )
 
     # add_column_to_entity_info(entity_info, res_df, curr_population)

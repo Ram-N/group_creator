@@ -1,6 +1,10 @@
 import pandas as pd
 
-from cfg import *
+from .cfg import ranked_attrs, entity_info, CLASS_SIZE
+
+
+def sort_pop_by_fitness(curr_population):
+    return sorted(curr_population.items(), key=lambda x: x[1].fitness)
 
 
 def calc_candidate_fitness(candidate, ranked_attrs, entity_info):
@@ -35,6 +39,6 @@ def calc_candidate_fitness(candidate, ranked_attrs, entity_info):
 
 def calc_pop_fitness(curr_population, ranked_attrs, entity_info):
 
-    for cand in range(len(curr_population)):
+    for cand in list(curr_population.keys()):
         calc_candidate_fitness(curr_population[cand], ranked_attrs, entity_info)
 
