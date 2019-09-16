@@ -4,19 +4,19 @@ group creator
 A python utility to create random equitable groups
 
 What does it do?
-==============================
+======
 
 
 How to Install
-==============================
+============
 
 
 Basic Usage
-==============================
+==========
 
 
 Project Organization
-==============================
+------------
 
     ├── LICENSE
     ├── Makefile           <- Makefile with commands like `make data` or `make train`
