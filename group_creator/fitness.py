@@ -21,7 +21,8 @@ def calc_candidate_fitness(candidate, ranked_attrs, entity_info, CLASS_SIZE):
     :type: float
     """
 
-    for attr_importance, attr in enumerate(ranked_attrs):
+    # _ is attr_importance
+    for _, attr in enumerate(ranked_attrs):
         ideal_ratio = entity_info[attr].value_counts() / CLASS_SIZE
 
         attr_fitness = 0

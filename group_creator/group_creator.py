@@ -83,7 +83,7 @@ def keep_top_n(curr_population, NUM_RETAIN):
     return curr_population
 
 
-def create_groups():
+def main():
 
     # Create a starter Population of Individuals
     # {Number: Candidate} dictionary
@@ -131,7 +131,3 @@ def create_groups():
         )
 
     # add_column_to_entity_info(entity_info, res_df, curr_population)
-
-
-if __name__ == "__main__":
-    create_groups()
