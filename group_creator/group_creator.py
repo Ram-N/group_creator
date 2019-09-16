@@ -111,15 +111,17 @@ def create_groups():
         # Main Loop for each Generation
 
         # FITNESS
-        calc_pop_fitness(curr_population, ranked_attrs, entity_info)
+        calc_pop_fitness(curr_population, ranked_attrs, entity_info, CLASS_SIZE)
 
         # SELECTION: Cull the low fitness individuals
         curr_population = keep_top_n(curr_population, NUM_RETAIN)
         print(f"Gen:{gen} Population has {len(curr_population)} survivors.")
 
-        display_results(curr_population, topk=5)
+        display_results(curr_population, topk=5, entity_info=entity_info)
         # Add offspring to current population
-        offspring = crossover(curr_population, num_offspring, genID_start, CLASS_SIZE)
+        offspring = crossover(
+            curr_population, num_offspring, genID_start, entity_info, CLASS_SIZE
+        )
         genID_start += num_offspring
 
         # merge curr_population and offspring
@@ -129,5 +131,7 @@ def create_groups():
         )
 
     # add_column_to_entity_info(entity_info, res_df, curr_population)
+
+
 if __name__ == "__main__":
     create_groups()

@@ -37,8 +37,10 @@ def calc_candidate_fitness(candidate, ranked_attrs, entity_info, CLASS_SIZE):
         candidate.fitness += attr_fitness  # add to total fitness
 
 
-def calc_pop_fitness(curr_population, ranked_attrs, entity_info):
+def calc_pop_fitness(curr_population, ranked_attrs, entity_info, CLASS_SIZE):
 
     for cand in list(curr_population.keys()):
-        calc_candidate_fitness(curr_population[cand], ranked_attrs, entity_info)
+        calc_candidate_fitness(
+            curr_population[cand], ranked_attrs, entity_info, CLASS_SIZE
+        )
 

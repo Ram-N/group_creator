@@ -24,14 +24,14 @@ def display_group_details(candidate, ranked_attrs, entity_info):
     print()
 
 
-def print_topper_details(topper_ID, curr_population):
+def print_topper_details(topper_ID, curr_population, entity_info):
     print(f"THE Topper {topper_ID}")
     display_group_details(curr_population[topper_ID], ranked_attrs, entity_info)
     display_candidate_fitness(topper_ID, curr_population)
 
 
-def display_results(curr_population, topk):
+def display_results(curr_population, topk, entity_info):
 
     sorted_pop = sort_pop_by_fitness(curr_population)  # List of (ID,Cand)
     [print(cand) for ID, cand in sorted_pop[:topk]]  # print the top k candidates
-    print_topper_details(sorted_pop[0][0], curr_population)
+    print_topper_details(sorted_pop[0][0], curr_population, entity_info)

@@ -165,7 +165,7 @@ def mate(cand1, cand2):
     return new
 
 
-def crossover(curr_population, num_offspring, gen_start, CLASS_SIZE):
+def crossover(curr_population, num_offspring, gen_start, entity_info, CLASS_SIZE):
 
     offspring = {}
     for cID in range(gen_start, gen_start + num_offspring):
