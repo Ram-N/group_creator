@@ -1,6 +1,5 @@
 import pandas as pd
 
-NUM_GROUPS = 7
 ranked_attrs = ["Gender", "Country"]
 
 

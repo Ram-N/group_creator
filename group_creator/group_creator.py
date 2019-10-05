@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+import argparse
 import numpy as np
 import pandas as pd
 import random
@@ -88,11 +88,24 @@ def main():
     # Create a starter Population of Individuals
     # {Number: Candidate} dictionary
 
-    entity_info = pd.read_csv("data/raw/group_creation_sample1.csv")
-    CLASS_SIZE = len(entity_info)
-    print(f"Will divide {CLASS_SIZE} individuals into {NUM_GROUPS} groups")
 
-    curr_population = seed_individuals(CLASS_SIZE, NUM_GROUPS, POPULATION_SIZE)
+    parser = argparse.ArgumentParser(description='Make random equitable groups.')
+    parser.add_argument('filename',
+                        help='the relative path to the CSV file that contains the entities with attributes to be grouped')
+    parser.add_argument('num_groups',
+                        help='the number of groups to be created ',
+                        type=int)
+
+    args = parser.parse_args()
+    fn = args.filename
+    num_groups = args.num_groups
+
+#    entity_info = pd.read_csv("data/raw/group_creation_sample1.csv")
+    entity_info = pd.read_csv(fn)
+    CLASS_SIZE = len(entity_info)
+    print(f"Will divide {CLASS_SIZE} individuals into {num_groups} groups")
+
+    curr_population = seed_individuals(CLASS_SIZE, num_groups, POPULATION_SIZE)
     genID_start = POPULATION_SIZE
     num_offspring = POPULATION_SIZE - NUM_RETAIN  # needed in Crossover step
 
